@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"))
-
+app.use('/api/v1/sensor-data',require('./routes/routes'))
 // Connecting to database
 // pool.getConnection((err) => {
 //     if (err) return console.error(err.message);
@@ -26,9 +26,6 @@ app.use(morgan("dev"))
 //   });
 
 
-  app.get("/", (req, res) => {
-    res.send({message:"connected"})
-});
 
 const port=process.env.PORT||3000;
 
