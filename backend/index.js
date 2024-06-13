@@ -1,56 +1,48 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
+const app = express();
 const bodyParser = require('body-parser');
-const connectDB = require('./db/connect');
-const SensorData = require('./models/SensorData');
+const morgan =require('morgan');
+const pool = require("./config/db");
 require('dotenv').config();
 
-const app = express();
-const port = 3000;
 
-// Connect to database
-connectDB();
- 
-// Use body-parser to parse JSON bodies into JS objects
-app.use(bodyParser.json());
 app.use(cors());
-// Endpoint to receive sensor data
-app.post('/sensor-data', async (req, res) => {
-  const { temperature, humidity } = req.body;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("dev"))
 
-  if (temperature === undefined || humidity === undefined) {
-    return res.status(400).json({ error: 'Temperature and humidity are required' });
-  }
+// Connecting to database
+// pool.getConnection((err) => {
+//     if (err) return console.error(err.message);
+  
+//     console.log('Connected to the MySQL server.');
+//   });
+  
+//   connection.end((err) => {
+//     if (err) return console.error(err.message);
+  
+//     console.log('Close the database connection.');
+//   });
 
-  try {
-    const sensorData = new SensorData({
-      temperature,
-      humidity
+
+  app.get("/", (req, res) => {
+    res.send({message:"connected"})
+});
+
+const port=process.env.PORT||3000;
+
+pool.query("SELECT 1").then(()=>{
+    console.log("database connected");
+
+    app.listen(port, () => {
+        console.log(`Server is running at port ${port}`);
     });
+})
+.catch((err)=>{
+    console.log("error occured ",err)
+})
 
-    await sensorData.save();
 
-    res.json({ message: 'Sensor data received' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to save sensor data' });
-  }
-});
-
-// Endpoint to get the latest sensor data
-app.get('/sensor-data', async (req, res) => {
-  try {
-    const latestData = await SensorData.findOne().sort({ timestamp: -1 });
-
-    if (!latestData) {
-      return res.status(404).json({ error: 'No sensor data available' });
-    }
-
-    res.json(latestData);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve sensor data' });
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server is listening on http://localhost:${port}`);
-});
+  
+  

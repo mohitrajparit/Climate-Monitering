@@ -3,7 +3,7 @@ import './App.css';
 import axios from 'axios';
 import tmp from "./assets/temperature.png"
 import humi from "./assets/humidity.png"
-
+import LiveTime from './LiveTime';
 function App() {
   const [temperature,setTemperature]=useState(0);
   const [humidity,setHumidity]=useState(0);
@@ -20,8 +20,15 @@ function App() {
         });
   }, []);
   
-  return (
-<div class="flex justify-center items-center mt-[-15rem] mr-10 w-full p-8">
+  return (<>
+      {/* clock */}
+      <div className=" flex flex-col   bg-gray-800 ml-[16rem] w-[45rem]">
+      <LiveTime /> 
+    </div>
+
+
+{/* data  */}
+<div class="flex justify-center items-center mt-[0rem] ml-32 mr-10 w-full p-8">
     <div class="bg-blue-200 h-64 rounded-lg p-8 flex justify-center items-center">
         <div class="w-72 m-0 p-0 flex">
           <div className='p-4 mr-0 ml-0'>
@@ -43,6 +50,9 @@ function App() {
         </div>
     </div>
 </div>
+  
+  </>
+
 
 
 
